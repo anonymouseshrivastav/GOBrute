@@ -1,4 +1,4 @@
-## GOBrute
+## GOBrute v1
 
 A brazingly fast Wordpress login bruteforce tool written in Go. 
 
