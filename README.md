@@ -2,6 +2,11 @@
 
 A brazingly fast Wordpress login bruteforce tool written in Go. 
 
+### Changelog v2.1:
+1. Bug fixes.
+2. Performance improvemnt.
+3. Added better user experience.
+
 ### Info: 
 1. Find usernames **https://target.com/wp-json/wp/v2/users**.
 2. Generate passwords related to username using [this tool](https://github.com/anonymouseshrivastav/password-generator).
@@ -22,11 +27,11 @@ pkg install golang git
 ```
 
 ```bash
-git clone https://github.com/anonymouseshrivastav/GOBrute
+git clone https://github.com/anonymouseshrivastav/gobrute
 ```
 
 ```bash
-cd GOBrute
+cd gobrute
 ```
 
 ```bash
@@ -35,17 +40,17 @@ go build
 
 ### Usage:
 ```bash
-GOBrute --url <login page url> -u <username> -p <password list> -t <threads>
+gobrute --url <login page url> -u <username> -p <password list> -t <threads>
 ```
 ```bash
-GOBrute --url https://target.com/wp-login.php -u admin -p passwords.txt -t 40
+gobrute --url https://target.com/wp-login.php -u admin -p passwords.txt -t 40
 ```
 
 
 ### Access the tool from any directory:
 
 ```bash
-cp WPBrute /data/data/com.termux/files/usr/bin/WPBrute
+cp gobrute /data/data/com.termux/files/usr/bin/gobrute
 ```
 
 ### More Info:

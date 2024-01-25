@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"bufio"
+	"fmt"
 	"math/rand"
+	"os"
 )
 
 var userAgentsList = []string{"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36",
@@ -30,4 +33,30 @@ var userAgentsList = []string{"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/5
 func GetUserAgent() string {
 	randNum := rand.Intn(len(userAgentsList))
 	return userAgentsList[randNum]
+}
+
+func GetTotalPassNum(passList string) int {
+
+	passFile, err := os.Open(passList)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(0)
+	}
+	passScanner := bufio.NewScanner(passFile)
+	count := 0
+	for passScanner.Scan() {
+		count++
+	}
+	return count
+}
+
+func PrintStats(key, val string) {
+
+	greenColor := "\033[32m"
+	redColor := "\033[31m"
+	reset := "\033[0m"
+
+	fmt.Print(greenColor, key, redColor, val, reset)
+
 }
