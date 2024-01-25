@@ -4,7 +4,7 @@ A brazingly fast Wordpress login bruteforce tool written in Go.
 
 ### Changelog v2.1:
 1. Bug fixes.
-2. Performance improvemnt.
+2. Performance improvement.
 3. Added better user experience.
 
 ### Info: 
