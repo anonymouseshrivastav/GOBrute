@@ -147,7 +147,7 @@ func checkCredencials(websiteURL string, reqBody map[string]string, c *uint8, se
 		PrintStats("\033[3AErrors: ", strconv.Itoa(errors))
 		PrintStats("Password: ", reqBody["pwd"])
 
-		fmt.Printf("%s Checked: \t%s%d/%d (%d%%)\n%s", GreenColor, RedColor, checkedPass, totalPass, StatusPercentage, ResetColor)
+		fmt.Printf("%s Checked: %s%d/%d (%d%%)\n%s", GreenColor, RedColor, checkedPass, totalPass, StatusPercentage, ResetColor)
 	}
 
 }
