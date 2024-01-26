@@ -2,10 +2,10 @@
 
 A brazingly fast Wordpress login bruteforce tool written in Go. 
 
-### Changelog v2.1:
-1. Bug fixes.
-2. Performance improvement.
-3. Added better user experience.
+### Changelog v2.2:
+1. Better output design.
+2. Code refactored.
+3. Performance improvements.
 
 ### Info: 
 1. Find usernames **https://target.com/wp-json/wp/v2/users**.
