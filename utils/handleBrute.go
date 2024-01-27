@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 )
@@ -51,7 +50,7 @@ func HandleMain(websiteURL string, username string, passlist string, threads int
 
 	wg.Wait()
 
-	fmt.Println(RedColor, "\nValid pass did not found :(")
+	fmt.Println(RedColor, "\n\n Valid pass did not found :(")
 	os.Exit(0)
 }
 
@@ -144,10 +143,7 @@ func checkCredencials(websiteURL string, reqBody map[string]string, c *uint8, se
 	} else {
 		StatusPercentage := (checkedPass * 100) / totalPass
 
-		PrintStats("\033[3AErrors: ", strconv.Itoa(errors))
-		PrintStats("Password: ", reqBody["pwd"])
-
-		fmt.Printf("%s Checked: %s%d/%d (%d%%)\n%s", GreenColor, RedColor, checkedPass, totalPass, StatusPercentage, ResetColor)
+		fmt.Printf("%s\r Checked: %s%d/%d (%d%%) %s| %sErrors: %s%d%s", GreenColor, RedColor, checkedPass, totalPass, StatusPercentage, WhiteColor, GreenColor, RedColor, errors, ResetColor)
 	}
 
 }

@@ -38,8 +38,7 @@ func main() {
 
 	utils.PrintStats("Target: ", url)
 	utils.PrintStats("Username: ", username)
-	utils.PrintStats("Threads: ", strconv.Itoa(threads))
-	fmt.Println("\n\n\n")
+	utils.PrintStats("Threads: ", strconv.Itoa(threads)+"\n")
 
 	utils.HandleMain(url, username, passlist, threads)
 }
